@@ -1,41 +1,35 @@
 # CURRENT_STATE.md
 
 ## Status atual
-Sprint 12 (VALIDAÇÃO_FINAL) concluída. MVP validado: lint, typecheck, testes, build, cobertura, auditoria UI/UX e teste manual executados. Navegação completa funcional. Gameplay (engine) é a única lacuna restante.
+Pós-correções de auditoria. 4 itens corrigidos e validados. Críticos/altos pendentes — exigem Sprint 13 (Gameplay Engine).
 
 ## Última ação executada
-Sprint 12 completa (2026-05-24) — 7 tarefas executadas:
-1. **Lint:** ESLint flat config, zero warnings ✅
-2. **Typecheck:** tsc --noEmit, zero erros ✅
-3. **Testes:** 70/70 passando em 8 suites ✅
-4. **Cobertura:** 74/68/76/75 — abaixo da meta de 80% (bloqueio jsdom, documentado em DEC-002)
-5. **Auditoria UI/UX:** Alta conformidade, 0 críticas (relatório: auditoria/SPRINT_12_UI_UX_AUDITORIA.md)
-6. **Build:** vite build 367ms, dist/ OK, preview sem erros ✅
-7. **Teste manual:** Navegação menu→seleção→anúncio OK; GameScreen/gameplay NÃO implementado
+Sessão de correção pós-auditoria + validação (2026-05-24):
+1. DEC-009: Stack React/Vite/TS documentada como decisão formal
+2. Bug skills.ts linha 61/81 corrigido — `this.definitions` substitui `SKILL_DEFINITIONS` global
+3. Button: prop `disabled` com estilo visual (opacity 0.5)
+4. Git init + commit inicial (`a52c4d9`, 89 arquivos)
+5. Validação: 70/70 testes, lint zero, typecheck zero, build OK
 
-## Último erro ou bloqueio
-jsdom 29 e happy-dom 20 congelam em Node.js v22.22.2 — impede testes de eventos DOM e é a causa raiz de não atingir 80% de cobertura. Bloqueio conhecido desde a Sprint 11.
+## Pendências críticas (bloqueiam MVP jogável)
+- CRIT-01: Engine (`moveCreatures`, `checkVictory`, GameScreen)
+- CRIT-02: VictoryScreen / DefeatScreen
+- HIGH-02: Persistência integrada aos níveis
+- HIGH-03: HUD integrado ao App.tsx
+- HIGH-04: SDK de anúncios real (placeholder atual)
 
-## Hipótese atual
-O MVP está pronto para validação como "shell jogável" — navegação, UI, ads e testes estão sólidos. Falta apenas a engine de gameplay para torná-lo um jogo completo.
+## Arquivos alterados nesta sessão
+- `src/game/skills.ts` — bug corrigido (linhas 61/81)
+- `src/ui/Button.tsx` — prop `disabled`
+- `docs/agent/DECISIONS.md` — DEC-009 adicionada
+- `.git/` — repositório criado
 
 ## Próxima ação imediata
-Sprint de gameplay: implementar `moveCreatures`, `checkVictory`, GameScreen, integração do HUD e persistência real com localStorage. Esta é a última lacuna antes de um MVP verdadeiramente jogável.
+Sprint 13 — Gameplay Engine: GameScreen com game loop, moveCreatures, checkVictory, VictoryScreen, DefeatScreen, integração HUD, conexão save/load.
 
-## Arquivos relevantes agora
-- `src/App.tsx` — navegação menu/levelSelect, sem case 'game'
-- `src/ui/HUD.tsx` — componente pronto, não integrado
-- `src/game/skills.ts` — SkillManager funcional (bug linha 61 conhecido)
-- `src/game/level_manager.ts` — LevelManager pronto (100% coberto)
-- `src/storage/progress.ts` — save/load pronto (95% coberto), não integrado
-- `src/ads/` — sistema de anúncios completo (100% coberto)
-- `auditoria/SPRINT_12_*.md` — 3 relatórios de validação
-- `docs/agent/HANDOFF.md` — handoff completo
-
-## Não repetir
-- Instalar jsdom ou happy-dom sem antes trocar versão do Node.js ou usar linkedom
-- Criar novos componentes de UI sem seguir UI_UX_GUIDE.md e usar tokens de theme.ts
-- Modificar skills.ts linha 61 sem discutir o impacto
-
-## Observação crítica
-O projeto agora tem 3 relatórios de auditoria em `auditoria/` documentando o estado real do MVP. A cobertura de 80% não é atingível sem resolver o jsdom — os thresholds atuais (70/65/70/70) são realistas (DEC-002). O fluxo de navegação e anúncios está completo e validado.
+## O que NÃO fazer
+- Não refatorar skills.ts (bug já corrigido)
+- Não alterar Button.tsx (disabled já implementado)
+- Não reverter DEC-009 (stack documentada)
+- Não reinstalar jsdom/happy-dom sem trocar Node
+- Não criar novas telas fora do escopo da Sprint 13

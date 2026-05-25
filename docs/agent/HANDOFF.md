@@ -6,26 +6,31 @@
 - **Problema resolvido:** Jogo casual de estratégia com criaturas que usam habilidades para atravessar níveis.
 - **Resultado esperado:** MVP jogável com menu, seleção de nível, HUD, skills com cooldown, sistema de anúncios intersticiais e persistência de progresso.
 - **Escopo confirmado:** Componentes de UI, sistema de skills com cooldown, gerenciador de níveis (LevelManager), streaks de anúncios, testes unitários com cobertura >= 70%, compliance com UI_UX_GUIDE.md.
+- **Decisão de stack (DEC-009):** React + Vite + TypeScript (web) em vez de Godot/Cocos2d-x. Para mobile/desktop futuros: Capacitor ou Tauri.
 
 ## 2. Estado atual
 
-**Classificação:** Em andamento (MVP funcional com pendências documentadas)
+**Classificação:** Em andamento — MVP "shell" navegável completo. Engine de gameplay pendente (Sprint 13).
 
 ### O que já existe e funciona
 
-- **Build web:** `npm run build` gera `dist/` (vite, 344ms).
+- **Build web:** `npm run build` gera `dist/` (vite, ~368ms).
 - **Dev server:** `npm run dev` — porta 3000.
 - **Typecheck:** `npm run typecheck` (tsc --noEmit) — zero erros.
 - **Lint:** `npm run lint` (eslint) — zero warnings. Config: typescript-eslint + react-hooks.
 - **Testes:** `npm test` (vitest) — **70 testes** passando em 8 suites.
 - **Cobertura:** Statements 74%, Branches 69%, Functions 77%, Lines 75%. Thresholds: 70/65/70/70.
+- **Git:** Repositório inicializado, commit `a52c4d9` com 89 arquivos.
 - **MenuScreen:** Tela inicial com título "Lemmings", botão "Jogar", botões debug.
-- **AdScreen:** Overlay de anúncio intersticial. Estados: loading, erro, padrão. Dispara após 2 vitórias ou 3 derrotas consecutivas.
-- **Streak de anúncios:** `ads_manager.ts` — 100% coberto. Funciona via debug buttons no menu.
-- **SkillManager:** Sistema de skills com cooldown baseado em `Date.now()`. 95.74% coberto.
+- **LevelSelectionScreen:** Grid de seleção com 5 níveis (2 desbloq., 3 bloq.). Botão "← Voltar".
+- **AdScreen:** Overlay de anúncio intersticial. Estados: loading, erro, padrão. Fechamento funcional.
+- **Streak de anúncios:** `ads_manager.ts` — 100% coberto. Funciona via debug buttons.
+- **SkillManager:** Sistema de skills com cooldown. 95.74% coberto. **Bug linha 61/81 corrigido** — usa `this.definitions`.
 - **LevelManager:** Gerenciador de estado de nível com restart. 100% coberto.
-- **UI Components:** Todos os 9 componentes usam tokens de `theme.ts` e seguem `UI_UX_GUIDE.md`.
-- **Progress storage:** Módulo de save/load com localStorage. 95% coberto (linhas de serialização não cobertas).
+- **UI Components:** Todos os componentes usam tokens de `theme.ts` e seguem `UI_UX_GUIDE.md`.
+- **Button:** Variantes primary/secondary. **Prop `disabled` implementada** com estilo visual.
+- **Progress storage:** Módulo de save/load com localStorage. 95% coberto.
+- **DEC-009:** Stack React/Vite/TS documentada formalmente.
 
 ### O que está parcialmente funcionando
 
@@ -33,14 +38,16 @@
 
 ### O que está quebrado
 
-- **Nada.** O bug do Button.tsx (onClick não propagado) foi identificado e corrigido. Era a causa raiz do AdScreen "Sair agora" não responder.
+- **Nada confirmado.** Bug do Button.onClick e bug do skills.ts (linha 61) foram corrigidos.
 
 ### O que está pendente
 
-- **Módulos de gameplay não implementados:** `moveCreatures`, `checkVictory` (engine do jogo) e `saveProgress`/`loadProgress` (persistência real) não existem na codebase. Documentados como lacunas na Sprint 10.
-- **Bug em skills.ts (linha 61):** `iniciarSkill` usa `SKILL_DEFINITIONS` global em vez das definições do construtor. Não corrigido — sprints de teste proibiam alterar código de produção.
-- **Sem repositório git:** O projeto não tem `.git/`. Commits não são possíveis.
-- **jsdom incompatível:** jsdom 29 e happy-dom 20 congelam em Node.js v22.22.2 ao criar DOM. Testes de eventos de mouse (hover em Button, SkillButton) não podem ser executados — esses handlers representam a maior lacuna de cobertura restante.
+- **Módulos de gameplay não implementados:** `moveCreatures`, `checkVictory` (engine do jogo), `GameScreen`, `VictoryScreen`, `DefeatScreen` não existem na codebase. **Este é o bloqueador central.**
+- **HUD não integrado:** `src/ui/HUD.tsx` existe e está testado, mas não é renderizado no App.tsx (depende de GameScreen).
+- **Persistência não integrada:** `storage/progress.ts` existe (95% coberto) mas não conectado ao `levels.ts` (dados mockados fixos).
+- **SDK de anúncios placeholder:** `sdk_adapter.ts` usa placeholder com delay simulado. Sem AdMob ou provider real.
+- **jsdom incompatível:** jsdom 29 e happy-dom 20 congelam em Node.js v22.22.2. Cobertura travada em ~74%.
+- **PRD desatualizado:** Ainda referencia Godot/Cocos2d-x e builds iOS/Android/PC. Precisa refletir stack web (DEC-009).
 
 ### Bloqueios atuais
 
@@ -54,14 +61,13 @@
 
 ## 3. Próxima ação recomendada
 
-- **Ação:** Iniciar Sprint de gameplay — implementar `moveCreatures`, `checkVictory` e persistência real (save/load com localStorage).
-- **Objetivo:** Criar a engine do jogo para que os níveis sejam jogáveis, não apenas navegáveis.
-- **Por que esta ação vem agora:** As pendências de integração (LevelSelectionScreen, bug Button/AdScreen) foram resolvidas. O fluxo de navegação menu → seleção está completo. O próximo passo natural é tornar o jogo jogável.
-- **Arquivos envolvidos:** Novos módulos em `src/game/` (engine), `src/storage/` (persistência), `src/core/` (interfaces existentes).
-- **Informações necessárias:** Definição das regras de gameplay (como criaturas se movem, condições de vitória/derrota).
-- **Resultado esperado:** Um nível jogável com criaturas que usam skills para atravessar o cenário.
-- **Risco principal:** Escopo — decidir quão complexo o gameplay deve ser para o MVP.
-- **Quem deve executar:** modelo intermediário/forte (requer design de gameplay e implementação de engine).
+- **Ação:** Sprint 13 — Gameplay Engine: implementar GameScreen com game loop (requestAnimationFrame), `moveCreatures`, `checkVictory`, VictoryScreen, DefeatScreen, integração do HUD e conexão save/load aos níveis.
+- **Objetivo:** Tornar o MVP jogável — criaturas se movem, níveis têm condição de vitória/derrota, feedback visual ao jogador.
+- **Por que esta ação vem agora:** Todas as correções de bugs (Button.onClick, skills.ts linha 61, Button disabled) estão feitas. Git inicializado. Stack documentada (DEC-009). A engine é o último bloqueador antes de um MVP funcional.
+- **Arquivos envolvidos:** Novos: `src/ui/GameScreen.tsx`, `src/ui/VictoryScreen.tsx`, `src/ui/DefeatScreen.tsx`, `src/game/engine.ts`. Alterar: `src/App.tsx` (adicionar case 'game'), `src/ui/levels.ts` (conectar storage).
+- **Resultado esperado:** Um nível jogável com criaturas, skills, timer, vitória/derrota e persistência.
+- **Risco principal:** Escopo da engine — decidir complexidade do gameplay para MVP.
+- **Quem deve executar:** modelo intermediário/forte (design de gameplay + implementação de engine).
 
 ## 4. Arquivos importantes
 
@@ -238,29 +244,35 @@
 
 ## 11. O que o próximo agente NÃO deve fazer
 
-- **NÃO** reinstalar jsdom ou happy-dom esperando que funcione — o problema está no Node.js v22.22.2. Teste antes em versão diferente ou use `linkedom`.
+- **NÃO** reinstalar jsdom ou happy-dom esperando que funcione — o problema está no Node.js v22.22.2.
 - **NÃO** recriar testes que já existem — 70 testes estão passando.
-- **NÃO** alterar a assinatura pública de funções exportadas (ex: `estaDisponivel`, `deveExibirAnuncio`) — a codebase usa português.
-- **NÃO** modificar `skills.ts` (linha 61) sem antes discutir o impacto — o bug afeta o construtor com definições customizadas.
+- **NÃO** alterar a assinatura pública de funções exportadas (ex: `estaDisponivel`, `deveExibirAnuncio`).
+- **NÃO** modificar `skills.ts` — bug da linha 61 já foi corrigido (usa `this.definitions`).
+- **NÃO** modificar `Button.tsx` — prop `disabled` já implementada.
 - **NÃO** criar novos componentes de UI sem seguir `UI_UX_GUIDE.md` e usar tokens de `theme.ts`.
-- **NÃO** executar `npm run test:coverage` sem paciência — o teste do sdk_adapter placeholder leva 1.5s.
-- **NÃO** reverter a correção do Button.onClick — o bug estava causando falha silenciosa em todos os botões da aplicação.
+- **NÃO** reverter DEC-009 — a stack React/Vite/TS está documentada e decidida.
+- **NÃO** implementar multiplayer, editor de níveis, loja ou qualquer funcionalidade fora do MVP.
+- **NÃO** alterar `tsconfig.json` — `strict: true` deve permanecer.
+- **NÃO** usar `any` ou `@ts-ignore` sem justificativa documentada.
 
 ## 12. Dúvidas abertas
 
 | Dúvida | Impacto | Quem deve responder | Observação |
 |---|---|---|---|
-| jsdom funciona em outra versão do Node.js (ex: 20.x)? | Médio | humano (testar com nvm) | Desbloquearia testes de eventos DOM |
-| Quando criar os módulos `moveCreatures`, `checkVictory` e save/load? | Alto | humano (planejamento da próxima sprint) | Próxima ação recomendada após esta sessão |
-| O bug da linha 61 de skills.ts deve ser corrigido agora ou na próxima sprint de gameplay? | Médio | humano | Só afeta skills customizadas (não usadas atualmente) |
-| Inicializar repositório git? | Baixo | humano | Facilitaria rastreamento de alterações |
+| Como deve ser o gameplay do MVP? (Complexidade: grid-based, física simples, número de criaturas) | Alto | humano (design de gameplay) | Define escopo da Sprint 13 |
+| jsdom funciona em Node.js 20.x? | Médio | humano (testar com nvm) | Desbloquearia testes DOM e cobertura 80% |
+| Provider de anúncios: AdMob, AdSense ou manter placeholder? | Médio | humano | Impacta monetização |
+| PRD deve ser atualizado para refletir stack web (DEC-009)? | Médio | humano | PRD atual referencia Godot/Cocos2d-x |
+| Builds mobile/desktop via Capacitor/Tauri — quando? | Baixo | humano | Depende de target de plataforma |
 
-### Dúvidas resolvidas nesta sessão
+### Dúvidas resolvidas
 
 | Dúvida | Resolução |
 |---|---|
-| O botão "Sair agora" do AdScreen era bug real ou limitação da browser tool? | **Bug real** — Button.tsx não propagava `onClick` ao DOM. Corrigido. |
-| LevelSelectionScreen deveria ser integrada ao App.tsx? | **Sim** — Integrada com prop `onBack` para navegação. Placeholder removido. |
+| Bug skills.ts linha 61 — quando corrigir? | Corrigido na sessão pós-auditoria. Usa `this.definitions` |
+| Button precisa de estado disabled? | Implementado com estilo visual (opacity 0.5) |
+| Stack React/Vite é decisão definitiva? | Sim — DEC-009 formalizada |
+| Git deve ser inicializado? | Sim — commit `a52c4d9` com 89 arquivos |
 
 ## 13. Comandos úteis
 

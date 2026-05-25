@@ -14,10 +14,19 @@ O formato segue a lógica de manter mudanças em ordem cronológica, separadas p
 - Typecheck: tsc --noEmit, zero erros ✅
 - Testes: 70/70 passando em 8 suites ✅
 - Cobertura: 74.34/68.86/76.66/75.34 (meta 80% não atingida — bloqueio jsdom)
-- Build: vite build 367ms, dist/ OK, preview sem erros ✅
-- Auditoria UI/UX: Alta conformidade, 0 críticas, 2 médias, 3 sugestões (relatório em auditoria/)
-- Teste manual: Fluxo de navegação completo OK; GameScreen/gameplay não implementado (documentado)
+- Build: vite build 368ms, dist/ OK, preview sem erros ✅
+- Auditoria UI/UX: Alta conformidade, 0 críticas, 2 médias, 3 sugestões
+- Teste manual: Fluxo de navegação completo OK; GameScreen/gameplay não implementado
 - Relatórios: `auditoria/SPRINT_12_COBERTURA.md`, `auditoria/SPRINT_12_UI_UX_AUDITORIA.md`, `auditoria/SPRINT_12_TESTE_MANUAL.md`
+- Auditoria final: `docs/AUDITORIA_FINAL.md` — veredito: Não aprovado (engine ausente)
+
+### Pós-Auditoria (2026-05-24)
+
+- DEC-009: Stack React/Vite/TS documentada como decisão formal
+- Bug skills.ts linha 61/81 corrigido — `this.definitions` substitui `SKILL_DEFINITIONS` global
+- Button: prop `disabled` implementada com estilo visual (opacity 0.5, cursor not-allowed)
+- Git: repositório inicializado, commit `a52c4d9` com 89 arquivos
+- Validação pós-correção: 70/70 testes, lint zero, typecheck zero, build OK. Sem regressões
 
 ### Added
 
