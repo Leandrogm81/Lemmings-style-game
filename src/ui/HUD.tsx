@@ -3,9 +3,6 @@ import TimerBar from './TimerBar'
 import SkillButton from './SkillButton'
 import type { CSSProperties } from 'react'
 
-// ─── Tipos ────────────────────────────────────────────────────────────────
-
-/** Estado de uma skill vindo do engine */
 export interface HUDSkillState {
   id: string
   nome: string
@@ -14,23 +11,14 @@ export interface HUDSkillState {
 }
 
 interface HUDProps {
-  /** Número de criaturas restantes (vivas + não salvas) */
   criaturasRestantes?: number
-  /** Nome do nível atual */
   nomeNivel?: string
-  /** Porcentagem do timer (0-100) */
   timerPorcentagem?: number
-  /** Tempo restante em segundos */
   tempoRestante?: number
-  /** Lista de skills com estado atual */
   skills?: HUDSkillState[]
-  /** ID da skill atualmente selecionada */
   skillSelecionada?: string | null
-  /** Callback quando o jogador clica em uma skill */
   onSkillClick?: (skillId: string) => void
 }
-
-// ─── Estilos ──────────────────────────────────────────────────────────────
 
 const containerStyle: CSSProperties = {
   position: 'fixed',
@@ -38,8 +26,9 @@ const containerStyle: CSSProperties = {
   left: 0,
   right: 0,
   zIndex: 100,
-  backgroundColor: 'rgba(255,255,255,0.95)',
-  boxShadow: shadow.card,
+  background: `linear-gradient(180deg, ${colors.surfaceElevated} 0%, ${colors.surface} 100%)`,
+  borderBottom: `1px solid ${colors.border}`,
+  boxShadow: `0 4px 20px rgba(0,0,0,0.4)`,
   padding: `${spacing.sm}px ${spacing.md}px`,
   boxSizing: 'border-box',
 }
@@ -51,27 +40,27 @@ const topRowStyle: CSSProperties = {
 }
 
 const counterStyle: CSSProperties = {
+  display: 'flex',
+  alignItems: 'center',
+  gap: 6,
   fontSize: fontSize.body,
-  fontWeight: fontWeight.semibold,
-  color: colors.textPrimary,
-  lineHeight: 1.3,
+  fontWeight: fontWeight.bold,
+  color: colors.creature,
 }
 
 const levelLabelStyle: CSSProperties = {
   fontSize: fontSize.helper,
   fontWeight: fontWeight.medium,
   color: colors.textSecondary,
-  lineHeight: 1.3,
 }
 
 const buttonsRowStyle: CSSProperties = {
   display: 'flex',
-  gap: spacing.sm,
-  marginTop: spacing.md,
+  gap: spacing.xs,
+  marginTop: spacing.sm,
   flexWrap: 'wrap',
+  justifyContent: 'center',
 }
-
-// ─── Valores padrão (compatível com uso sem props) ────────────────────────
 
 const DEFAULT_SKILLS: HUDSkillState[] = [
   { id: 'escavar', nome: 'Escavar', disponivel: true, cooldownRestanteMs: 0 },
@@ -80,37 +69,33 @@ const DEFAULT_SKILLS: HUDSkillState[] = [
   { id: 'empurrar', nome: 'Empurrar', disponivel: true, cooldownRestanteMs: 0 },
 ]
 
-// ─── Componente ───────────────────────────────────────────────────────────
-
 export default function HUD({
-  criaturasRestantes = 5,
+  criaturasRestantes = 1,
   nomeNivel = 'Nível 1',
   timerPorcentagem = 100,
-  tempoRestante = 60,
+  tempoRestante = 90,
   skills = DEFAULT_SKILLS,
   skillSelecionada = null,
   onSkillClick,
 }: HUDProps) {
   return (
     <div style={containerStyle}>
-      {/* Top row: creature counter + level info */}
       <div style={topRowStyle}>
-        <span style={counterStyle}>x{criaturasRestantes}</span>
+        <span style={counterStyle}>
+          <span style={{ fontSize: 16 }}>👤</span> {criaturasRestantes}
+        </span>
         <span style={levelLabelStyle}>{nomeNivel}</span>
       </div>
-
-      {/* Timer bar */}
-      <div style={{ marginTop: spacing.sm }}>
+      <div style={{ marginTop: spacing.xs }}>
         <TimerBar porcentagem={timerPorcentagem} tempoRestante={tempoRestante} />
       </div>
-
-      {/* Skill buttons */}
       <div style={buttonsRowStyle}>
         {skills.map((skill) => (
           <SkillButton
             key={skill.id}
             nome={skill.nome}
             ativo={skill.disponivel}
+            selecionado={skillSelecionada === skill.id}
             onClick={() => onSkillClick?.(skill.id)}
           />
         ))}

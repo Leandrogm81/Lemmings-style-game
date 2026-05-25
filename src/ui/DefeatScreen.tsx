@@ -1,31 +1,13 @@
-/**
- * DefeatScreen — Tela exibida quando o jogador perde um nível.
- *
- * SEGUE UI_UX_GUIDE.md:
- * - Seção 4.2: usa tokens de theme.ts (errorBg, error)
- * - Seção 5.1: ação principal clara ("Tentar novamente", "Menu")
- * - Seção 6: estado de erro com feedback e caminho de recuperação
- * - Seção 8: microcopy objetivo
- */
-
 import { colors, spacing, fontSize, fontWeight, borderRadius, shadow } from './theme';
 import Button from './Button';
 import type { CSSProperties } from 'react';
 
-// ─── Props ────────────────────────────────────────────────────────────────
-
 interface DefeatScreenProps {
-  /** Nome do nível */
   nomeNivel?: string;
-  /** Motivo da derrota */
   motivo?: string;
-  /** Callback para ir ao menu */
   onMenu: () => void;
-  /** Callback para tentar novamente */
   onTentarNovamente: () => void;
 }
-
-// ─── Estilos ──────────────────────────────────────────────────────────────
 
 const overlayStyle: CSSProperties = {
   position: 'fixed',
@@ -34,7 +16,7 @@ const overlayStyle: CSSProperties = {
   display: 'flex',
   alignItems: 'center',
   justifyContent: 'center',
-  backgroundColor: 'rgba(0, 0, 0, 0.6)',
+  background: `radial-gradient(ellipse at center, ${colors.errorBg} 0%, rgba(0,0,0,0.85) 70%)`,
   padding: spacing.md,
   boxSizing: 'border-box',
 };
@@ -45,11 +27,12 @@ const cardStyle: CSSProperties = {
   alignItems: 'center',
   justifyContent: 'center',
   width: '100%',
-  maxWidth: 360,
+  maxWidth: 340,
   minHeight: 280,
-  backgroundColor: colors.errorBg,
+  background: `linear-gradient(180deg, ${colors.surfaceElevated} 0%, ${colors.surface} 100%)`,
+  border: `1px solid ${colors.error}40`,
   borderRadius: borderRadius.modal,
-  boxShadow: shadow.modal,
+  boxShadow: `0 0 40px ${colors.error}20, ${shadow.modal}`,
   padding: spacing.xl,
   boxSizing: 'border-box',
   gap: spacing.md,
@@ -57,9 +40,10 @@ const cardStyle: CSSProperties = {
 };
 
 const iconStyle: CSSProperties = {
-  fontSize: 48,
+  fontSize: 64,
   lineHeight: 1,
   margin: 0,
+  filter: 'drop-shadow(0 0 20px rgba(239,68,68,0.4))',
 };
 
 const titleStyle: CSSProperties = {
@@ -67,6 +51,7 @@ const titleStyle: CSSProperties = {
   fontWeight: fontWeight.bold,
   color: colors.error,
   margin: 0,
+  textShadow: `0 0 20px ${colors.error}40`,
 };
 
 const motivoStyle: CSSProperties = {
@@ -74,7 +59,7 @@ const motivoStyle: CSSProperties = {
   fontWeight: fontWeight.regular,
   color: colors.textSecondary,
   margin: 0,
-  lineHeight: 1.6,
+  lineHeight: 1.8,
 };
 
 const actionsStyle: CSSProperties = {
@@ -86,7 +71,13 @@ const actionsStyle: CSSProperties = {
   marginTop: spacing.sm,
 };
 
-// ─── Componente ───────────────────────────────────────────────────────────
+const dicaStyle: CSSProperties = {
+  fontSize: fontSize.helper,
+  fontWeight: fontWeight.regular,
+  color: colors.textMuted,
+  margin: 0,
+  lineHeight: 1.4,
+};
 
 export default function DefeatScreen({
   nomeNivel = 'Nível 1',
@@ -97,11 +88,14 @@ export default function DefeatScreen({
   return (
     <div style={overlayStyle}>
       <div style={cardStyle}>
-        <p style={iconStyle}>&#128128;</p>
+        <p style={iconStyle}>💔</p>
         <h2 style={titleStyle}>Derrota</h2>
         <p style={motivoStyle}>
           {nomeNivel}<br />
           {motivo}
+        </p>
+        <p style={dicaStyle}>
+          Dica: use 🧱 Construir para preencher o buraco no caminho das criaturas!
         </p>
         <div style={actionsStyle}>
           <Button variant="primary" onClick={onTentarNovamente}>

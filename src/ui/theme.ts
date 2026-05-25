@@ -4,32 +4,50 @@
  */
 
 export const colors = {
-  /** Fundo principal #F8FAFC */
-  background: '#F8FAFC',
-  /** Superfície/card #FFFFFF */
-  surface: '#FFFFFF',
-  /** Texto principal #0F172A */
-  textPrimary: '#0F172A',
-  /** Texto secundário #475569 */
-  textSecondary: '#475569',
-  /** Texto discreto #64748B */
-  textMuted: '#64748B',
-  /** Borda #E2E8F0 */
-  border: '#E2E8F0',
-  /** Ação primária #1D4ED8 */
-  primary: '#1D4ED8',
-  /** Primária hover #1E40AF */
-  primaryHover: '#1E40AF',
-  /** Sucesso #15803D */
-  success: '#15803D',
-  /** Alerta #B45309 */
-  warning: '#B45309',
-  /** Erro #B91C1C */
-  error: '#B91C1C',
-  /** Fundo erro leve #FEF2F2 */
-  errorBg: '#FEF2F2',
-  /** Fundo sucesso leve #F0FDF4 */
-  successBg: '#F0FDF4',
+  /** Fundo escuro de jogo */
+  bg: '#1a1a2e',
+  /** Fundo de painéis/cards */
+  surface: '#16213e',
+  /** Fundo de superfície elevada */
+  surfaceElevated: '#1e2a4a',
+  /** Texto principal claro */
+  textPrimary: '#e8e8e8',
+  /** Texto secundário */
+  textSecondary: '#a0a0b0',
+  /** Texto discreto */
+  textMuted: '#6a6a7a',
+  /** Borda sutil */
+  border: '#2a3a5a',
+  /** Ação primária — laranja vibrante */
+  primary: '#e87a30',
+  /** Primary hover */
+  primaryHover: '#d46a20',
+  /** Sucesso — verde */
+  success: '#4ade80',
+  /** Alerta */
+  warning: '#f59e0b',
+  /** Erro */
+  error: '#ef4444',
+  /** Fundo erro leve */
+  errorBg: '#2a1a1a',
+  /** Fundo sucesso leve */
+  successBg: '#1a2a1a',
+  /** Terreno — marrom */
+  terrain: '#8B7355',
+  /** Terreno claro */
+  terrainLight: '#a0896a',
+  /** Terreno escuro */
+  terrainDark: '#6d5a3e',
+  /** Vazio/abismo */
+  abyss: '#0d0d1a',
+  /** Saída — verde brilhante */
+  exit: '#22c55e',
+  /** Criatura viva — azul */
+  creature: '#60a5fa',
+  /** Criatura na saída — verde */
+  creatureSaved: '#4ade80',
+  /** Criatura morta — vermelho */
+  creatureDead: '#ef4444',
 } as const;
 
 export const spacing = {

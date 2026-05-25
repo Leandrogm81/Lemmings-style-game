@@ -8,19 +8,20 @@ import { colors, spacing, borderRadius, fontSize, fontWeight, shadow } from './t
 describe('theme', () => {
   describe('colors', () => {
     it('deve ter todas as cores definidas', () => {
-      expect(colors.background).toBe('#F8FAFC');
-      expect(colors.surface).toBe('#FFFFFF');
-      expect(colors.textPrimary).toBe('#0F172A');
-      expect(colors.textSecondary).toBe('#475569');
-      expect(colors.textMuted).toBe('#64748B');
-      expect(colors.border).toBe('#E2E8F0');
-      expect(colors.primary).toBe('#1D4ED8');
-      expect(colors.primaryHover).toBe('#1E40AF');
-      expect(colors.success).toBe('#15803D');
-      expect(colors.warning).toBe('#B45309');
-      expect(colors.error).toBe('#B91C1C');
-      expect(colors.errorBg).toBe('#FEF2F2');
-      expect(colors.successBg).toBe('#F0FDF4');
+      expect(colors.bg).toBe('#1a1a2e');
+      expect(colors.surface).toBe('#16213e');
+      expect(colors.surfaceElevated).toBe('#1e2a4a');
+      expect(colors.textPrimary).toBe('#e8e8e8');
+      expect(colors.textSecondary).toBe('#a0a0b0');
+      expect(colors.textMuted).toBe('#6a6a7a');
+      expect(colors.border).toBe('#2a3a5a');
+      expect(colors.primary).toBe('#e87a30');
+      expect(colors.primaryHover).toBe('#d46a20');
+      expect(colors.success).toBe('#4ade80');
+      expect(colors.warning).toBe('#f59e0b');
+      expect(colors.error).toBe('#ef4444');
+      expect(colors.errorBg).toBe('#2a1a1a');
+      expect(colors.successBg).toBe('#1a2a1a');
     });
 
     it('todas as cores devem ser strings hex com #', () => {

@@ -62,7 +62,8 @@
 
 ## 3. Próxima ação recomendada
 
-- **Ação:** Sprint 14 — Polish & QA: testar gameplay manualmente (`npm run dev`), ajustar balanceamento, adicionar feedback visual, revisar mobile.
+| 📁 | Sprint 14 — Polish & QA | ✅ | 121 testes, visual reformulado |
+| 📁 | Sprint 15 — Conteúdo (novos níveis) | ⏳ | Pendente |
 - **Objetivo:** Refinar a experiência de jogo antes de considerar o MVP "pronto".
 - **Arquivos envolvidos:** `src/ui/GameScreen.tsx` (ajustes de grid/velocidade), `src/game/engine.ts` (balanceamento), possivelmente novos assets.
 - **Risco principal:** Sem testes manuais, o balanceamento pode estar errado.

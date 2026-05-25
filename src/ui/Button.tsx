@@ -19,17 +19,18 @@ const baseStyle: CSSProperties = {
   border: 'none',
   cursor: 'pointer',
   lineHeight: 1.4,
-  transition: 'background-color 0.2s, box-shadow 0.2s',
+  transition: 'all 0.2s ease',
   minHeight: 48,
   boxSizing: 'border-box',
+  fontFamily: 'inherit',
 }
 
 const variants: Record<'primary' | 'secondary', CSSProperties> = {
   primary: {
     ...baseStyle,
-    backgroundColor: colors.primary,
+    background: `linear-gradient(135deg, ${colors.primary} 0%, ${colors.primaryHover} 100%)`,
     color: '#FFFFFF',
-    boxShadow: shadow.button,
+    boxShadow: `0 2px 8px ${colors.primary}40`,
   },
   secondary: {
     ...baseStyle,
@@ -52,16 +53,18 @@ export default function Button({ children, variant = 'primary', onClick, disable
       disabled={disabled}
       onMouseEnter={(e) => {
         if (variant === 'primary') {
-          e.currentTarget.style.backgroundColor = colors.primaryHover
+          e.currentTarget.style.boxShadow = `0 0 16px ${colors.primary}60`;
         } else {
-          e.currentTarget.style.backgroundColor = '#F1F5F9'
+          e.currentTarget.style.borderColor = colors.primary;
+          e.currentTarget.style.color = colors.primary;
         }
       }}
       onMouseLeave={(e) => {
         if (variant === 'primary') {
-          e.currentTarget.style.backgroundColor = colors.primary
+          e.currentTarget.style.boxShadow = `0 2px 8px ${colors.primary}40`;
         } else {
-          e.currentTarget.style.backgroundColor = 'transparent'
+          e.currentTarget.style.borderColor = colors.border;
+          e.currentTarget.style.color = colors.textSecondary;
         }
       }}
     >

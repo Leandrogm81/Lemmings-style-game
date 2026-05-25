@@ -328,3 +328,32 @@ Reduzir os thresholds globais de cobertura para **62/58/58/62** (lines/branches/
 - DEC-001 (Vitest)
 - DEC-002 (thresholds anteriores — substituídos por esta decisão)
 - DEC-003 (renderToString)
+
+---
+
+## DEC-011 — metaCriaturas valida contra total incluindo fila de spawn
+
+### Status
+Aceita
+
+### Data
+2026-05-25
+
+### Contexto
+A Sprint 14 adicionou spawn queue (`filaSpawn`) no engine. As criaturas na fila não estão no array `criaturas` inicial, então `metaCriaturas > config.criaturas.length` disparava erro mesmo com criaturas suficientes no total (inicial + fila).
+
+### Decisão
+A validação de `metaCriaturas` deve considerar o total de criaturas: `criaturas.length + (filaSpawn?.length ?? 0)`.
+
+### Motivo
+O spawn queue adiciona criaturas gradualmente — o total de criaturas que existirão no nível é a soma das iniciais mais as da fila.
+
+### Consequências
+- Positivo: Config com 1 criatura inicial + 4 na fila e metaCriaturas=3 é válido.
+- Atenção: Nenhuma — a fila de spawn é opcional e o padrão é vazio.
+
+### Arquivos ou áreas afetadas
+- `src/game/engine.ts` (linha 115-116: validação)
+
+### Decisões relacionadas
+- Nenhuma

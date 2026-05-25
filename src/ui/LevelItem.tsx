@@ -15,11 +15,7 @@ const cardBase: React.CSSProperties = {
   overflow: 'hidden',
   boxSizing: 'border-box',
   minHeight: 80,
-}
-
-const accentBar: React.CSSProperties = {
-  width: 4,
-  flexShrink: 0,
+  border: `1px solid ${colors.border}`,
 }
 
 const contentArea: React.CSSProperties = {
@@ -36,14 +32,11 @@ export default function LevelItem({ level, onClick }: LevelItemProps) {
 
   const cardStyle: React.CSSProperties = {
     ...cardBase,
-    backgroundColor: colors.surface,
+    background: isUnlocked
+      ? `linear-gradient(135deg, ${colors.surface} 0%, ${colors.surfaceElevated} 100%)`
+      : colors.surface,
     opacity: isUnlocked ? 1 : 0.5,
     cursor: isUnlocked && onClick ? 'pointer' : 'default',
-  }
-
-  const accentStyle: React.CSSProperties = {
-    ...accentBar,
-    backgroundColor: isUnlocked ? colors.success : colors.border,
   }
 
   const nameStyle: React.CSSProperties = {
@@ -63,12 +56,29 @@ export default function LevelItem({ level, onClick }: LevelItemProps) {
   }
 
   return (
-    <div style={cardStyle} onClick={isUnlocked ? onClick : undefined}>
-      <div style={accentStyle} />
+    <div
+      style={cardStyle}
+      onClick={isUnlocked ? onClick : undefined}
+      onMouseEnter={(e) => {
+        if (isUnlocked) {
+          e.currentTarget.style.borderColor = colors.primary;
+        }
+      }}
+      onMouseLeave={(e) => {
+        e.currentTarget.style.borderColor = colors.border;
+      }}
+    >
+      <div
+        style={{
+          width: 4,
+          flexShrink: 0,
+          backgroundColor: isUnlocked ? colors.primary : colors.border,
+        }}
+      />
       <div style={contentArea}>
         <p style={nameStyle}>{level.nome}</p>
         <p style={statusStyle}>
-          {isUnlocked ? 'Disponível' : 'Bloqueado'}
+          {isUnlocked ? 'Disponível' : '🔒 Bloqueado'}
         </p>
       </div>
     </div>

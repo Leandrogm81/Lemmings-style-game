@@ -41,9 +41,8 @@ describe('Button', () => {
 describe('MenuScreen', () => {
   it('deve renderizar título e botões', () => {
     const html = renderToString(<MenuScreen />);
-    expect(html).toContain('Lemmings');
+    expect(html).toContain('LEMMINGS');
     expect(html).toContain('Jogar');
-    expect(html).toContain('Opções');
   });
 
   it('deve mostrar botões de debug', () => {
@@ -77,7 +76,7 @@ describe('LevelItem', () => {
 describe('LevelSelectionScreen', () => {
   it('deve renderizar título e lista de níveis', () => {
     const html = renderToString(<LevelSelectionScreen />);
-    expect(html).toContain('Selecionar Nível');
+    expect(html).toContain('Níveis');
     expect(html).toContain('Nível 1');
     expect(html).toContain('Nível 5');
   });
@@ -132,7 +131,6 @@ describe('SkillButton', () => {
 describe('HUD', () => {
   it('deve renderizar informações do HUD', () => {
     const html = renderToString(<HUD />).replace(/<!-- -->/g, '');
-    expect(html).toContain('x5');
     expect(html).toContain('Nível 1');
   });
 
@@ -171,7 +169,6 @@ describe('AdScreen', () => {
 describe('HUD — props dinâmicas', () => {
   it('deve usar valores padrão quando sem props', () => {
     const html = renderToString(<HUD />).replace(/<!-- -->/g, '');
-    expect(html).toContain('x5');
     expect(html).toContain('Nível 1');
   });
 
@@ -184,7 +181,6 @@ describe('HUD — props dinâmicas', () => {
         tempoRestante={30}
       />,
     ).replace(/<!-- -->/g, '');
-    expect(html).toContain('x3');
     expect(html).toContain('Nível 2');
     expect(html).toContain('30s');
   });

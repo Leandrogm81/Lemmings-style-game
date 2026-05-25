@@ -1,9 +1,10 @@
-import { colors, spacing, borderRadius, fontSize, fontWeight, shadow } from './theme'
+import { colors, borderRadius, fontSize, fontWeight, shadow } from './theme'
 import type { CSSProperties } from 'react'
 
 interface SkillButtonProps {
   nome: string
   ativo?: boolean
+  selecionado?: boolean
   onClick?: () => void
 }
 
@@ -14,62 +15,66 @@ const EMOJI_MAP: Record<string, string> = {
   Empurrar: '➡️',
 }
 
-const buttonBase: CSSProperties = {
-  display: 'flex',
-  flexDirection: 'column',
-  alignItems: 'center',
-  justifyContent: 'center',
-  width: 56,
-  height: 56,
-  padding: spacing.xs,
-  borderRadius: borderRadius.button,
-  backgroundColor: colors.surface,
-  border: `1px solid ${colors.border}`,
-  boxShadow: shadow.button,
-  boxSizing: 'border-box',
-  transition: 'background-color 0.2s',
-  gap: 2,
+const ICON_MAP: Record<string, string> = {
+  Escavar: '⛏️',
+  Construir: '🧱',
+  Bloquear: '🛡️',
+  Empurrar: '💨',
 }
 
-export default function SkillButton({ nome, ativo = true, onClick }: SkillButtonProps) {
-  const isActive = ativo
-  const emoji = EMOJI_MAP[nome] || nome.charAt(0)
+export default function SkillButton({ nome, ativo = true, selecionado = false, onClick }: SkillButtonProps) {
+  const emoji = ICON_MAP[nome] || nome.charAt(0)
 
   const buttonStyle: CSSProperties = {
-    ...buttonBase,
-    cursor: isActive ? 'pointer' : 'not-allowed',
-    opacity: isActive ? 1 : 0.5,
+    display: 'flex',
+    flexDirection: 'column',
+    alignItems: 'center',
+    justifyContent: 'center',
+    width: 60,
+    height: 58,
+    padding: '6px 4px',
+    borderRadius: borderRadius.button,
+    background: selecionado
+      ? `linear-gradient(135deg, ${colors.primary} 0%, ${colors.primaryHover} 100%)`
+      : colors.surfaceElevated,
+    border: selecionado
+      ? `2px solid ${colors.primary}`
+      : `1px solid ${colors.border}`,
+    boxShadow: selecionado ? `0 0 12px ${colors.primary}40` : shadow.button,
+    boxSizing: 'border-box',
+    cursor: ativo ? 'pointer' : 'not-allowed',
+    opacity: ativo ? 1 : 0.35,
+    transition: 'all 0.15s ease',
+    gap: 1,
+    fontFamily: 'inherit',
   }
 
   return (
     <button
       style={buttonStyle}
-      onClick={isActive ? onClick : undefined}
-      disabled={!isActive}
+      onClick={ativo ? onClick : undefined}
+      disabled={!ativo}
       onMouseEnter={(e) => {
-        if (isActive) {
-          e.currentTarget.style.backgroundColor = '#F1F5F9'
+        if (ativo && !selecionado) {
+          e.currentTarget.style.background = colors.surface;
+          e.currentTarget.style.borderColor = colors.primary;
         }
       }}
       onMouseLeave={(e) => {
-        e.currentTarget.style.backgroundColor = colors.surface
+        if (!selecionado) {
+          e.currentTarget.style.background = colors.surfaceElevated;
+          e.currentTarget.style.borderColor = colors.border;
+        }
       }}
     >
-      <span
-        style={{
-          fontSize: fontSize.body,
-          fontWeight: fontWeight.semibold,
-          color: isActive ? colors.primary : colors.textMuted,
-          lineHeight: 1,
-        }}
-      >
+      <span style={{ fontSize: 18, lineHeight: 1 }}>
         {emoji}
       </span>
       <span
         style={{
-          fontSize: fontSize.helper,
-          fontWeight: fontWeight.medium,
-          color: isActive ? colors.textSecondary : colors.textMuted,
+          fontSize: 11,
+          fontWeight: fontWeight.semibold,
+          color: selecionado ? '#fff' : colors.textSecondary,
           lineHeight: 1,
           textAlign: 'center',
           whiteSpace: 'nowrap',

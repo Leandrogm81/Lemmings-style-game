@@ -1,4 +1,4 @@
-import { colors, spacing, fontSize, fontWeight } from './theme'
+import { colors, spacing, fontSize, fontWeight, borderRadius, shadow } from './theme'
 import { niveis } from './levels'
 import LevelItem from './LevelItem'
 import Button from './Button'
@@ -9,34 +9,37 @@ const styles: Record<string, React.CSSProperties> = {
     flexDirection: 'column',
     alignItems: 'center',
     minHeight: '100dvh',
-    backgroundColor: colors.background,
+    background: `linear-gradient(180deg, ${colors.bg} 0%, #0f0f23 100%)`,
     padding: spacing.md,
     boxSizing: 'border-box',
   },
   inner: {
     width: '100%',
-    maxWidth: 600,
+    maxWidth: 500,
+    display: 'flex',
+    flexDirection: 'column',
+    gap: spacing.lg,
   },
-  backRow: {
-    marginBottom: spacing.sm,
+  topRow: {
+    display: 'flex',
+    alignItems: 'center',
+    gap: spacing.md,
   },
   title: {
     fontSize: fontSize.sectionTitle,
     fontWeight: fontWeight.semibold,
     color: colors.textPrimary,
     margin: 0,
-    textAlign: 'center',
+    textAlign: 'center' as const,
+    flex: 1,
   },
   gridWrapper: {
-    marginTop: spacing.lg,
     paddingBottom: spacing.xl,
   },
 }
 
 interface LevelSelectionScreenProps {
-  /** Callback opcional para voltar ao menu. Se fornecido, exibe botão "Voltar". */
   onBack?: () => void
-  /** Callback quando o jogador seleciona um nível */
   onSelectLevel?: (levelId: number) => void
 }
 
@@ -44,14 +47,14 @@ export default function LevelSelectionScreen({ onBack, onSelectLevel }: LevelSel
   return (
     <div style={styles.container}>
       <div style={styles.inner}>
-        {onBack && (
-          <div style={styles.backRow}>
+        <div style={styles.topRow}>
+          {onBack && (
             <Button variant="secondary" onClick={onBack}>
               ← Voltar
             </Button>
-          </div>
-        )}
-        <h2 style={styles.title}>Selecionar Nível</h2>
+          )}
+          <h2 style={styles.title}>Níveis</h2>
+        </div>
         <div style={styles.gridWrapper}>
           <style>{`
             .level-grid {
@@ -59,7 +62,7 @@ export default function LevelSelectionScreen({ onBack, onSelectLevel }: LevelSel
               grid-template-columns: repeat(2, 1fr);
               gap: ${spacing.sm}px;
             }
-            @media (max-width: 639px) {
+            @media (max-width: 380px) {
               .level-grid {
                 grid-template-columns: 1fr;
               }

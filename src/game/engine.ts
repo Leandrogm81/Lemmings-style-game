@@ -41,6 +41,13 @@ export interface CreatureRuntime {
 /** Status do engine */
 export type EngineStatus = 'running' | 'victory' | 'defeat';
 
+/** Item na fila de spawn — criatura que ainda não entrou no jogo */
+export interface SpawnItem {
+  id: string;
+  x: number;
+  y: number;
+}
+
 /** Configuração inicial do engine */
 export interface EngineConfig {
   /** Grid: grid[linha][coluna] */
@@ -51,6 +58,12 @@ export interface EngineConfig {
   tempoTotalMs: number;
   /** Quantas criaturas precisam alcançar a saída para vencer */
   metaCriaturas: number;
+  /** Fila de criaturas que entram no jogo gradualmente */
+  filaSpawn?: SpawnItem[];
+  /** Ticks entre cada spawn da fila (padrão: 3) */
+  intervaloSpawn?: number;
+  /** Máximo de criaturas ativas simultâneas (padrão: 3) */
+  maxCriaturasAtivas?: number;
 }
 
 /** Estado completo do engine em um dado momento */
@@ -64,6 +77,14 @@ export interface EngineState {
   tickCount: number;
   criaturasSalvas: number;
   criaturasPerdidas: number;
+  /** Fila de criaturas aguardando spawn */
+  filaSpawn: SpawnItem[];
+  /** Ticks entre cada spawn */
+  intervaloSpawn: number;
+  /** Máximo de criaturas ativas simultâneas */
+  maxCriaturasAtivas: number;
+  /** Contador de ticks desde o último spawn */
+  ticksDesdeUltimoSpawn: number;
 }
 
 // ─── Funções auxiliares ───────────────────────────────────────────────────
@@ -91,7 +112,8 @@ export function criarEstadoInicial(config: EngineConfig): EngineState {
   if (config.tempoTotalMs <= 0) {
     throw new Error('tempoTotalMs deve ser positivo');
   }
-  if (config.metaCriaturas <= 0 || config.metaCriaturas > config.criaturas.length) {
+  const totalCriaturas = config.criaturas.length + (config.filaSpawn?.length ?? 0);
+  if (config.metaCriaturas <= 0 || config.metaCriaturas > totalCriaturas) {
     throw new Error('metaCriaturas deve estar entre 1 e o total de criaturas');
   }
 
@@ -114,6 +136,10 @@ export function criarEstadoInicial(config: EngineConfig): EngineState {
     tickCount: 0,
     criaturasSalvas: 0,
     criaturasPerdidas: 0,
+    filaSpawn: (config.filaSpawn ?? []).map((s) => ({ ...s })),
+    intervaloSpawn: config.intervaloSpawn ?? 3,
+    maxCriaturasAtivas: config.maxCriaturasAtivas ?? 3,
+    ticksDesdeUltimoSpawn: 0,
   };
 }
 
@@ -137,6 +163,27 @@ export function tick(state: EngineState, deltaMs: number): EngineState {
   const novasCriaturas = cloneCriaturas(state.criaturas);
   const cols = state.grid[0]?.length ?? 0;
   const rows = state.grid.length;
+
+  // ─── Spawn da fila ──────────────────────────────────────────────
+  let fila = [...state.filaSpawn];
+  let ticksSpawn = state.ticksDesdeUltimoSpawn + 1;
+
+  if (fila.length > 0 && ticksSpawn >= state.intervaloSpawn) {
+    const ativas = novasCriaturas.filter((c) => c.vivo && !c.chegouSaida).length;
+    if (ativas < state.maxCriaturasAtivas) {
+      const proximo = fila.shift()!;
+      novasCriaturas.push({
+        id: proximo.id,
+        x: proximo.x,
+        y: proximo.y,
+        vivo: true,
+        chegouSaida: false,
+        efeitoEmpurrar: 0,
+        efeitoBloquear: 0,
+      });
+      ticksSpawn = 0;
+    }
+  }
 
   let salvas = state.criaturasSalvas;
   let perdidas = state.criaturasPerdidas;
@@ -214,6 +261,8 @@ export function tick(state: EngineState, deltaMs: number): EngineState {
     tickCount: state.tickCount + 1,
     criaturasSalvas: salvas,
     criaturasPerdidas: perdidas,
+    filaSpawn: fila,
+    ticksDesdeUltimoSpawn: ticksSpawn,
   };
 }
 

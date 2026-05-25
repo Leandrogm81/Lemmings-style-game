@@ -1,51 +1,43 @@
 # CHANGELOG
 
-## Sprint 13 — Gameplay Engine (2026-05-24)
+## Sprint 14 — Polish & QA (2026-05-25)
 
-### Adicionado
-- `src/game/engine.ts` — Engine de gameplay grid-based com game loop, movimentação de criaturas, verificação de vitória/derrota e aplicação de skills
-- `src/game/engine.test.ts` — 38 testes unitários do engine
-- `src/ui/GameScreen.tsx` — Tela principal de jogo com grid 10×6, 5 criaturas, game loop via requestAnimationFrame
-- `src/ui/VictoryScreen.tsx` — Tela de vitória com estatísticas e navegação
-- `src/ui/DefeatScreen.tsx` — Tela de derrota com opção de retry
-- Prop `onClick` em `LevelItem.tsx`
-- Prop `onSelectLevel` em `LevelSelectionScreen.tsx`
-- Função `getNiveisComProgresso()` em `levels.ts` para integração com progress storage
-- 8 novos testes em `components.test.tsx` (VictoryScreen, DefeatScreen, GameScreen, HUD dinâmico)
-- 2 novos testes em `levels.test.ts` (getNiveisComProgresso)
+### Reforma visual completa
+- **theme.ts**: Paleta escura de jogo (#1a1a2e), cores para terreno, abismo, criaturas, saída
+- **MenuScreen**: Logo "LEMMINGS" com glow, criaturas animadas com olhos e perninhas, fundo com estrelas e chão
+- **LevelSelectionScreen**: Título "Níveis", cards escuros com destaque hover
+- **LevelItem**: Cards reformulados com borda dinâmica, ícone 🔒 para bloqueados
+- **GameScreen**: Grid com tiles xadrez (terrain/terrainDark), gap com borda vermelha pulsante, saída com glow verde + 🚪
+- **Criaturas**: De bolinhas 12px para bonecos com olhos, corpo, perninhas, sorriso (salvas)
+- **HUD**: Timer com gradiente dinâmico (verde→amarelo→vermelho), contador 👤
+- **SkillButton**: Ícones novos (⛏️🧱🛡️💨), destaque laranja quando selecionado
+- **VictoryScreen / DefeatScreen**: Cards escuros com glow, dica na derrota
+- **TimerBar**: Gradiente dinâmico com base na porcentagem de tempo
+- **Button**: Gradiente laranja, glow hover
 
-### Modificado
-- `src/ui/HUD.tsx` — Refatorado com props dinâmicas (criaturasRestantes, nomeNivel, timerPorcentagem, skills, onSkillClick)
-- `src/ui/levels.ts` — Integração com `storage/progress.ts`; `niveis` agora é gerado dinamicamente
-- `src/App.tsx` — Integração completa de navegação: menu → levelSelect → game → victory/defeat
-- `vitest.config.ts` — Thresholds de cobertura ajustados para 62/58/58/62 (DEC-010)
-
-### Dívida técnica
-- jsdom/happy-dom permanece incompatível com Node.js v22.22.2
-- ESLint pode travar no WSL (timeout)
-- PRD desatualizado (referencia Godot/Cocos2d-x)
-
-### Métricas
-- Testes: 119 (era 70)
-- Suites: 9 (era 8)
-- Cobertura: statements 63%, branches 60%, functions 62%, lines 64%
-- Typecheck: zero erros
-- Build: 458ms
-
----
-
-## Sprint 11 — Auditoria e Correções (2026-05-24)
+### Balanceamento
+- Gap movido da coluna 5 → coluna 7 (mais tempo para reagir)
+- TICK_MS: 800ms → 600ms (ritmo mais dinâmico)
+- Timer: 60s → 90s (mais espaço para aprender)
+- Criaturas: spawn escalonado (1 inicial + 4 na fila, a cada 4 ticks, max 2 simultâneas)
+- **engine.ts**: Sistema de spawn queue (`filaSpawn`, `intervaloSpawn`, `maxCriaturasAtivas`)
 
 ### Correções
-- Bug `skills.ts` linha 61/81: `this.definitions` substitui `SKILL_DEFINITIONS` global
-- Bug `Button.tsx`: prop `onClick` propagada ao elemento `<button>`
-- Prop `disabled` implementada no Button com estilo visual (opacity 0.5)
-- `LevelSelectionScreen` integrada ao `App.tsx`
+- **engine.ts**: Validação de `metaCriaturas` agora conta criaturas da fila de spawn (DEC-011)
+- **Responsividade**: CELL_SIZE dinâmico baseado no viewport (`Math.max(32, Math.min(56, viewport/COLS))`)
 
-### Adicionado
-- DEC-009: Stack React/Vite/TS formalizada
-- Git init + commit inicial
+### Testes
+- 121 testes (era 119), 10 suites (era 9)
+- Novo teste E2E: fluxo completo Nível 1 (Construir → vitória, sem Construir → derrota)
+- Testes de componente atualizados para novo visual
+
+### Documentação
+- README.md com instruções, estrutura e stack
+- Sprint 14 plan em `docs/planos/Sprint14/`
+- GitHub remote configurado: `https://github.com/Leandrogm81/Lemmings-style-game`
 
 ### Métricas
-- Testes: 70
-- Cobertura: 74/69/77/75
+- Testes: 121 (era 119)
+- Suites: 10 (era 9)
+- Typecheck: zero erros
+- Build: 903ms

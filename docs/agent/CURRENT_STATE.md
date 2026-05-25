@@ -1,31 +1,32 @@
 # CURRENT_STATE.md
 
 ## Status atual
-Sprint 13 (Gameplay Engine) concluída. MVP jogável com engine grid-based, telas de vitória/derrota e persistência de progresso.
+Sprint 14 (Polish & QA) concluída. Reforma visual completa, balanceamento ajustado, GitHub configurado.
 
-## Última ação executada (Sprint 13 — 2026-05-24)
-Engine (`src/game/engine.ts`), GameScreen, VictoryScreen, DefeatScreen, HUD dinâmico, navegação completa (menu→levels→game→victory/defeat), levels.ts integrado ao storage, thresholds 62/58/58/62 (DEC-010).
+## Última ação executada (Sprint 14 — 2026-05-25)
+- Reforma visual completa (tema escuro, grid com tiles, criaturas-boneco, HUD reformulado)
+- Balanceamento: gap col 7, spawn queue, TICK_MS 600ms, timer 90s
+- Engine: spawn queue (filaSpawn, intervaloSpawn, maxCriaturasAtivas)
+- README.md, GitHub remote configurado
+- Teste E2E de fluxo completo adicionado
 
 ## Pendências
-- HIGH-04: SDK de anúncios real (placeholder atual)
 - MED-01: PRD desatualizado (referencia Godot/Cocos2d-x)
 - MED-02: jsdom incompatível com Node v22.22.2
-- LOW-01: Sem animações de morte/chegada de criaturas
-- LOW-02: Responsividade mobile não testada visualmente
-- LOW-03: Balanceamento de gameplay não ajustado
+- LOW-01: Mais níveis (atualmente só Nível 1 tem grid)
+- LOW-02: Animações CSS mais elaboradas (transição de movimento das criaturas)
+- LOW-03: SDk de anúncios real (placeholder atual)
 
 ## Métricas atuais
-- 119 testes (era 70), 9 suites, typecheck zero, build 458ms
+- 121 testes (era 119), 10 suites
+- Typecheck zero, build 903ms
 - Cobertura: 63/60/62/64 (thresholds 62/58/58/62)
-- ESLint: timeout no WSL (problema de ambiente, não de código)
 
-## Próxima ação imediata
-Sprint 14 — Polish & QA: rodar `npm run dev`, testar gameplay manualmente, ajustar balanceamento (velocidade, timer, dificuldade do gap), adicionar feedback visual (animações), revisar responsividade mobile.
+## Próxima ação recomendada
+Sprint 15 — Conteúdo: criar mais níveis com diferentes layouts de grid, obstáculos e combinações de skills.
 
 ## O que NÃO fazer
-- Não alterar engine.ts sem novos testes
+- Não reinstalar jsdom/happy-dom
 - Não modificar skills.ts (bug corrigido) ou Button.tsx (finalizado)
-- Não reverter DEC-009 (stack documentada)
-- Não reinstalar jsdom/happy-dom (Node v22 incompatível)
+- Não implementar multiplayer, editor de níveis, loja
 - Não usar `any` ou `@ts-ignore`
-- Não implementar multiplayer, editor de níveis ou loja
