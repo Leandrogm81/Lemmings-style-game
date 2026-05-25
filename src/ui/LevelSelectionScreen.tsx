@@ -36,9 +36,11 @@ const styles: Record<string, React.CSSProperties> = {
 interface LevelSelectionScreenProps {
   /** Callback opcional para voltar ao menu. Se fornecido, exibe botão "Voltar". */
   onBack?: () => void
+  /** Callback quando o jogador seleciona um nível */
+  onSelectLevel?: (levelId: number) => void
 }
 
-export default function LevelSelectionScreen({ onBack }: LevelSelectionScreenProps) {
+export default function LevelSelectionScreen({ onBack, onSelectLevel }: LevelSelectionScreenProps) {
   return (
     <div style={styles.container}>
       <div style={styles.inner}>
@@ -65,7 +67,11 @@ export default function LevelSelectionScreen({ onBack }: LevelSelectionScreenPro
           `}</style>
           <div className="level-grid">
             {niveis.map((level) => (
-              <LevelItem key={level.id} level={level} />
+              <LevelItem
+                key={level.id}
+                level={level}
+                onClick={level.desbloqueado ? () => onSelectLevel?.(level.id) : undefined}
+              />
             ))}
           </div>
         </div>

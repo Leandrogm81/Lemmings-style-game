@@ -3,6 +3,35 @@ import TimerBar from './TimerBar'
 import SkillButton from './SkillButton'
 import type { CSSProperties } from 'react'
 
+// ─── Tipos ────────────────────────────────────────────────────────────────
+
+/** Estado de uma skill vindo do engine */
+export interface HUDSkillState {
+  id: string
+  nome: string
+  disponivel: boolean
+  cooldownRestanteMs: number
+}
+
+interface HUDProps {
+  /** Número de criaturas restantes (vivas + não salvas) */
+  criaturasRestantes?: number
+  /** Nome do nível atual */
+  nomeNivel?: string
+  /** Porcentagem do timer (0-100) */
+  timerPorcentagem?: number
+  /** Tempo restante em segundos */
+  tempoRestante?: number
+  /** Lista de skills com estado atual */
+  skills?: HUDSkillState[]
+  /** ID da skill atualmente selecionada */
+  skillSelecionada?: string | null
+  /** Callback quando o jogador clica em uma skill */
+  onSkillClick?: (skillId: string) => void
+}
+
+// ─── Estilos ──────────────────────────────────────────────────────────────
+
 const containerStyle: CSSProperties = {
   position: 'fixed',
   top: 0,
@@ -42,26 +71,49 @@ const buttonsRowStyle: CSSProperties = {
   flexWrap: 'wrap',
 }
 
-export default function HUD() {
+// ─── Valores padrão (compatível com uso sem props) ────────────────────────
+
+const DEFAULT_SKILLS: HUDSkillState[] = [
+  { id: 'escavar', nome: 'Escavar', disponivel: true, cooldownRestanteMs: 0 },
+  { id: 'construir', nome: 'Construir', disponivel: true, cooldownRestanteMs: 0 },
+  { id: 'bloquear', nome: 'Bloquear', disponivel: true, cooldownRestanteMs: 0 },
+  { id: 'empurrar', nome: 'Empurrar', disponivel: true, cooldownRestanteMs: 0 },
+]
+
+// ─── Componente ───────────────────────────────────────────────────────────
+
+export default function HUD({
+  criaturasRestantes = 5,
+  nomeNivel = 'Nível 1',
+  timerPorcentagem = 100,
+  tempoRestante = 60,
+  skills = DEFAULT_SKILLS,
+  skillSelecionada = null,
+  onSkillClick,
+}: HUDProps) {
   return (
     <div style={containerStyle}>
       {/* Top row: creature counter + level info */}
       <div style={topRowStyle}>
-        <span style={counterStyle}>x5</span>
-        <span style={levelLabelStyle}>Nível 1</span>
+        <span style={counterStyle}>x{criaturasRestantes}</span>
+        <span style={levelLabelStyle}>{nomeNivel}</span>
       </div>
 
       {/* Timer bar */}
       <div style={{ marginTop: spacing.sm }}>
-        <TimerBar porcentagem={100} tempoRestante={60} />
+        <TimerBar porcentagem={timerPorcentagem} tempoRestante={tempoRestante} />
       </div>
 
       {/* Skill buttons */}
       <div style={buttonsRowStyle}>
-        <SkillButton nome="Escavar" />
-        <SkillButton nome="Construir" />
-        <SkillButton nome="Bloquear" />
-        <SkillButton nome="Empurrar" />
+        {skills.map((skill) => (
+          <SkillButton
+            key={skill.id}
+            nome={skill.nome}
+            ativo={skill.disponivel}
+            onClick={() => onSkillClick?.(skill.id)}
+          />
+        ))}
       </div>
     </div>
   )

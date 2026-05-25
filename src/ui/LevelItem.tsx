@@ -3,6 +3,7 @@ import type { LevelData } from './levels'
 
 interface LevelItemProps {
   level: LevelData
+  onClick?: () => void
 }
 
 const cardBase: React.CSSProperties = {
@@ -30,13 +31,14 @@ const contentArea: React.CSSProperties = {
   gap: spacing.xxs,
 }
 
-export default function LevelItem({ level }: LevelItemProps) {
+export default function LevelItem({ level, onClick }: LevelItemProps) {
   const isUnlocked = level.desbloqueado
 
   const cardStyle: React.CSSProperties = {
     ...cardBase,
     backgroundColor: colors.surface,
     opacity: isUnlocked ? 1 : 0.5,
+    cursor: isUnlocked && onClick ? 'pointer' : 'default',
   }
 
   const accentStyle: React.CSSProperties = {
@@ -61,7 +63,7 @@ export default function LevelItem({ level }: LevelItemProps) {
   }
 
   return (
-    <div style={cardStyle}>
+    <div style={cardStyle} onClick={isUnlocked ? onClick : undefined}>
       <div style={accentStyle} />
       <div style={contentArea}>
         <p style={nameStyle}>{level.nome}</p>

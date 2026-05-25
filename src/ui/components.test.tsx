@@ -15,7 +15,11 @@ import HUD from './HUD';
 import TimerBar from './TimerBar';
 import SkillButton from './SkillButton';
 import AdScreen from './AdScreen';
+import VictoryScreen from './VictoryScreen';
+import DefeatScreen from './DefeatScreen';
+import GameScreen from './GameScreen';
 import type { LevelData } from './levels';
+import type { LvlConfig } from '../core/lvl_config';
 
 // ─── Button ───────────────────────────────────────────────────────────
 
@@ -127,7 +131,7 @@ describe('SkillButton', () => {
 
 describe('HUD', () => {
   it('deve renderizar informações do HUD', () => {
-    const html = renderToString(<HUD />);
+    const html = renderToString(<HUD />).replace(/<!-- -->/g, '');
     expect(html).toContain('x5');
     expect(html).toContain('Nível 1');
   });
@@ -159,5 +163,114 @@ describe('AdScreen', () => {
     const html = renderToString(<AdScreen onClose={() => {}} error="Falha ao carregar" />);
     expect(html).toContain('Falha ao carregar');
     expect(html).toContain('Fechar');
+  });
+});
+
+// ─── HUD — props dinâmicas ────────────────────────────────────────────
+
+describe('HUD — props dinâmicas', () => {
+  it('deve usar valores padrão quando sem props', () => {
+    const html = renderToString(<HUD />).replace(/<!-- -->/g, '');
+    expect(html).toContain('x5');
+    expect(html).toContain('Nível 1');
+  });
+
+  it('deve refletir props personalizadas', () => {
+    const html = renderToString(
+      <HUD
+        criaturasRestantes={3}
+        nomeNivel="Nível 2"
+        timerPorcentagem={50}
+        tempoRestante={30}
+      />,
+    ).replace(/<!-- -->/g, '');
+    expect(html).toContain('x3');
+    expect(html).toContain('Nível 2');
+    expect(html).toContain('30s');
+  });
+});
+
+// ─── VictoryScreen ────────────────────────────────────────────────────
+
+describe('VictoryScreen', () => {
+  it('deve renderizar mensagem de vitória', () => {
+    const html = renderToString(<VictoryScreen onMenu={() => {}} />);
+    expect(html).toContain('Vitória!');
+    expect(html).toContain('Menu');
+  });
+
+  it('deve mostrar estatísticas', () => {
+    const html = renderToString(
+      <VictoryScreen
+        nomeNivel="Nível 3"
+        criaturasSalvas={4}
+        tempoRestante={25}
+        onMenu={() => {}}
+      />,
+    ).replace(/<!-- -->/g, '');
+    expect(html).toContain('Nível 3');
+    expect(html).toContain('Criaturas salvas: 4');
+    expect(html).toContain('25s');
+  });
+
+  it('deve mostrar botão próximo nível quando fornecido', () => {
+    const html = renderToString(
+      <VictoryScreen onMenu={() => {}} onProximoNivel={() => {}} />,
+    );
+    expect(html).toContain('Próximo nível');
+  });
+
+  it('não deve mostrar botão próximo nível quando ausente', () => {
+    const html = renderToString(<VictoryScreen onMenu={() => {}} />);
+    expect(html).not.toContain('Próximo nível');
+  });
+});
+
+// ─── DefeatScreen ─────────────────────────────────────────────────────
+
+describe('DefeatScreen', () => {
+  it('deve renderizar mensagem de derrota', () => {
+    const html = renderToString(
+      <DefeatScreen onMenu={() => {}} onTentarNovamente={() => {}} />,
+    );
+    expect(html).toContain('Derrota');
+    expect(html).toContain('Tentar novamente');
+    expect(html).toContain('Menu');
+  });
+
+  it('deve mostrar motivo da derrota', () => {
+    const html = renderToString(
+      <DefeatScreen
+        nomeNivel="Nível 2"
+        motivo="Todas as criaturas morreram"
+        onMenu={() => {}}
+        onTentarNovamente={() => {}}
+      />,
+    );
+    expect(html).toContain('Nível 2');
+    expect(html).toContain('Todas as criaturas morreram');
+  });
+});
+
+// ─── GameScreen — renderização inicial ────────────────────────────────
+
+describe('GameScreen', () => {
+  const nivelMock: LvlConfig = {
+    id: 1,
+    nome: 'Nível 1',
+    requisitosCriaturas: ['c1', 'c2', 'c3'],
+    listaHabilidadesDisponiveis: ['escavar', 'construir', 'bloquear', 'empurrar'],
+  };
+
+  it('deve renderizar estado de carregamento inicial (sem DOM)', () => {
+    const html = renderToString(
+      <GameScreen
+        nivel={nivelMock}
+        onVitoria={(_salvas, _tempo) => {}}
+        onDerrota={(_motivo) => {}}
+      />,
+    );
+    // Sem useEffect (renderToString), o estado inicial é null → mostra loading
+    expect(html).toContain('Carregando...');
   });
 });
