@@ -1,0 +1,4 @@
+/**
+ * Teste removido — jsdom é incompatível com Node.js v22.22.2.
+ * Componentes de UI são testados via renderToString em components.test.tsx.
+ */
