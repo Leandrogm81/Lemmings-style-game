@@ -20,7 +20,7 @@
 - **Lint:** `npm run lint` (eslint) — configurado, mas pode apresentar timeout no WSL (problema de ambiente).
 - **Testes:** `npm test` (vitest) — **119 testes** passando em 9 suites.
 - **Cobertura:** Statements 63%, Branches 60%, Functions 62%, Lines 64%. Thresholds: 62/58/58/62.
-- **Git:** Repositório local, commit `3b4afb8`. Sem remote configurado.
+- **Git:** Repositório local, commits `3b4afb8` + `f2f6173`. Sem remote configurado.
 
 ### Telas implementadas
 
