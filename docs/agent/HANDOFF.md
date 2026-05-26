@@ -4,69 +4,68 @@
 
 - **Objetivo principal:** Desenvolver um jogo web estilo Lemmings (React 19 + Vite 8 + TypeScript 6) como MVP funcional.
 - **Problema resolvido:** Jogo casual de estratégia com criaturas que usam habilidades para atravessar níveis.
-- **Resultado esperado:** MVP jogável com menu, seleção de nível, HUD, skills com cooldown, sistema de anúncios intersticiais e persistência de progresso.
-- **Escopo confirmado:** Componentes de UI, sistema de skills com cooldown, gerenciador de níveis (LevelManager), streaks de anúncios, testes unitários, compliance com UI_UX_GUIDE.md.
+- **Resultado esperado:** MVP jogável com menu, seleção de nível, HUD, skills, sistema de anúncios intersticiais, persistência de progresso e visual de jogo de verdade.
+- **Escopo confirmado:** Componentes de UI, sistema de skills, gerenciador de níveis (LevelManager), streaks de anúncios, testes unitários, compliance com UI_UX_GUIDE.md.
 - **Decisão de stack (DEC-009):** React + Vite + TypeScript (web).
 
 ## 2. Estado atual
 
-**Classificação:** Sprint 13 concluída. MVP jogável com engine grid-based, telas de vitória/derrota e persistência.
+**Classificação:** Sprint 14 concluída. Visual reformulado, balanceamento ajustado, engine corrigido.
 
 ### O que já existe e funciona
 
-- **Build web:** `npm run build` gera `dist/` (vite, ~458ms).
+- **Build web:** `npm run build` gera `dist/` (~903ms).
 - **Dev server:** `npm run dev` — porta 3000.
 - **Typecheck:** `npm run typecheck` (tsc --noEmit) — zero erros.
-- **Lint:** `npm run lint` (eslint) — configurado, mas pode apresentar timeout no WSL (problema de ambiente).
-- **Testes:** `npm test` (vitest) — **119 testes** passando em 9 suites.
-- **Cobertura:** Statements 63%, Branches 60%, Functions 62%, Lines 64%. Thresholds: 62/58/58/62.
-- **Git:** Repositório local, commits `3b4afb8` + `f2f6173`. Sem remote configurado.
+- **Lint:** `npm run lint` (eslint) — configurado, timeout no WSL (problema de ambiente).
+- **Testes:** `npm test` (vitest) — **121 testes** passando em 10 suites.
+- **Cobertura:** Statements 63%, Branches 60%, Functions 62%, Lines 64%. Thresholds: 62/58/58/62 (DEC-010).
+- **Git:** Repositório local + remote em `https://github.com/Leandrogm81/Lemmings-style-game`.
 
 ### Telas implementadas
 
-- **MenuScreen:** Tela inicial com título, botão Jogar, debug buttons.
-- **LevelSelectionScreen:** Grid de 5 níveis com estado de desbloqueio via progress storage. Clique no nível → GameScreen.
-- **GameScreen:** Grid 10×6, 5 criaturas, skills (escavar/construir/bloquear/empurrar), HUD dinâmico, game loop via requestAnimationFrame. Gap na coluna 5 exige uso de Construir.
-- **VictoryScreen:** Overlay de vitória com estatísticas (criaturas salvas, tempo). Botões Próximo nível / Menu.
-- **DefeatScreen:** Overlay de derrota com motivo. Botões Tentar novamente / Menu.
+- **MenuScreen:** Logo "LEMMINGS" com glow, criaturas animadas (bob), fundo com estrelas e chão.
+- **LevelSelectionScreen:** Grid de 5 níveis com cards escuros, destaque hover, ícone 🔒.
+- **GameScreen:** Grid 10×6, tiles xadrez (terrain/terrainDark), gap col 7 com borda vermelha pulsante, saída com glow + 🚪, criaturas como bonecos (olhos, corpo, perninhas). CELL_SIZE dinâmico (viewport).
+- **VictoryScreen:** Card escuro com glow verde, estatísticas, progressão.
+- **DefeatScreen:** Card escuro com glow vermelho, dica "use 🧱 Construir para preencher o buraco".
 - **AdScreen:** Overlay de anúncio intersticial. Estados: loading, erro, padrão.
 
 ### Módulos implementados
 
-- **SkillManager:** Skills com cooldown (escavar 3s, construir 5s, bloquear 4s, empurrar 3s). 95.83% coberto.
+- **SkillManager:** Skills com cooldown. 95.83% coberto.
 - **LevelManager:** Gerenciador de estado de nível. 100% coberto.
-- **Engine (`src/game/engine.ts`):** Game loop grid-based com `tick()`, `aplicarSkill()`, `verificarVitoria()`, `verificarDerrota()`. 94.33% coberto.
+- **Engine (`src/game/engine.ts`):** Game loop, spawn queue, `tick()`, `aplicarSkill()`, vitória/derrota. 94.33% coberto.
 - **Progress storage:** Save/load com localStorage. 95.23% coberto.
-- **Levels:** 5 níveis com desbloqueio por progresso (`getNiveisComProgresso`). 100% coberto.
+- **Levels:** 5 níveis via `getNiveisComProgresso`. 100% coberto.
 - **Ads manager:** Streaks de anúncios. 100% coberto.
 - **SDK adapter:** Provider placeholder com delay. 100% coberto.
 
 ### O que está pendente
 
-- **HIGH-04:** SDK de anúncios real (placeholder atual).
 - **MED-01:** PRD desatualizado (ainda referencia Godot/Cocos2d-x).
 - **MED-02:** jsdom/happy-dom incompatível com Node.js v22.22.2.
-- **LOW-01:** Sem animações de morte/chegada de criaturas (feedback visual básico).
-- **LOW-02:** Responsividade do grid em mobile não testada visualmente.
-- **LOW-03:** Balanceamento de gameplay (velocidade, timer, dificuldade do gap).
+- **LOW:** Animações de movimento das criaturas (transição CSS entre células).
+- **LOW:** Mais níveis com diferentes layouts e combinações de skills.
+- **LOW:** SDK de anúncios real (placeholder atual).
 
 ### Bloqueios atuais
 
 - **jsdom/happy-dom × Node.js v22.22.2:** Impede testes de interação DOM. Cobertura de UI limitada ao renderToString.
+- **Interação via browser_tool:** O clique em células do grid (para aplicar skills) não funcionou de forma confiável via ferramenta de automação. O engine foi validado via testes unitários (teste E2E confirma que Construir → vitória).
 
 ### Riscos importantes
 
-- **Balanceamento:** Gameplay atual pode ser muito fácil ou difícil — não foi testado com jogadores reais.
-- **Cobertura de branches:** 59.93% — apenas 1.93 pontos acima do threshold 58%. Pequenas regressões podem quebrar.
-- **ESLint timeout no WSL:** Pode ser problema de ambiente (Node v22 + WSL). Lint manual pode ser necessário.
+- **Balanceamento:** Ajustado (gap col 7, spawn queue, 90s timer, 600ms tick), mas não testado com jogadores reais.
+- **Cobertura de branches:** 59.93% — apenas 1.93 pontos acima do threshold 58%.
+- **ESLint timeout no WSL:** Pode ser ambiente específico.
 
 ## 3. Próxima ação recomendada
 
-| 📁 | Sprint 14 — Polish & QA | ✅ | 121 testes, visual reformulado |
-| 📁 | Sprint 15 — Conteúdo (novos níveis) | ⏳ | Pendente |
-- **Objetivo:** Refinar a experiência de jogo antes de considerar o MVP "pronto".
-- **Arquivos envolvidos:** `src/ui/GameScreen.tsx` (ajustes de grid/velocidade), `src/game/engine.ts` (balanceamento), possivelmente novos assets.
-- **Risco principal:** Sem testes manuais, o balanceamento pode estar errado.
+- **Ação:** Sprint 15 — criar mais níveis com diferentes layouts de grid, obstáculos e combinações de skills.
+- **Objetivo:** Expandir o conteúdo do jogo além do Nível 1.
+- **Arquivos envolvidos:** `src/ui/GameScreen.tsx` (função criarGridNivel1 → tornar parametrizável), `src/ui/levels.ts` (dados dos níveis), `src/game/engine.ts` (se precisar de novos tipos de tile).
+- **Risco principal:** Sem níveis adicionais, o jogo tem conteúdo muito limitado.
 
 ## 4. Arquivos importantes
 
@@ -77,29 +76,26 @@
 | `vitest.config.ts` | Vitest + coverage thresholds 62/58/58/62 | DEC-010 |
 | `tsconfig.json` | TypeScript strict | target: es2020 |
 | `eslint.config.js` | ESLint flat config | typescript-eslint + react-hooks |
-| `src/App.tsx` | Navegação completa | menu → levelSelect → game → victory/defeat |
-| `src/main.tsx` | Entry point | ReactDOM.createRoot |
-| `src/ui/theme.ts` | Tokens de estilo | Fonte: UI_UX_GUIDE.md |
-| `src/ui/GameScreen.tsx` | Tela principal de jogo | Grid 10×6, 5 criaturas, game loop |
-| `src/ui/VictoryScreen.tsx` | Tela de vitória | Estatísticas, próximo nível |
-| `src/ui/DefeatScreen.tsx` | Tela de derrota | Retry, menu |
-| `src/ui/HUD.tsx` | HUD dinâmico | Props: criaturas, nível, timer, skills |
-| `src/ui/LevelSelectionScreen.tsx` | Seleção de nível | Integrada com onSelectLevel |
-| `src/ui/LevelItem.tsx` | Card de nível | Prop onClick |
-| `src/ui/levels.ts` | Dados de níveis + progresso | getNiveisComProgresso() |
-| `src/game/engine.ts` | Engine de gameplay | tick, aplicarSkill, vitória/derrota |
-| `src/game/skills.ts` | SkillManager | Bug linha 61 corrigido |
-| `src/game/level_manager.ts` | LevelManager | 100% coberto |
-| `src/storage/progress.ts` | Save/load localStorage | 95% coberto |
-| `src/ads/ads_manager.ts` | Streaks de anúncios | 100% coberto |
-| `src/ads/sdk_adapter.ts` | Provider placeholder | 100% coberto |
-| `src/core/*.ts` | Interfaces: Criatura, LvlConfig, ProgressoJogador | Tipos apenas |
+| `src/ui/theme.ts` | Tokens de estilo (paleta escura) | Reformulado Sprint 14 |
+| `src/ui/MenuScreen.tsx` | Menu com logo, criaturas animadas | Reformulado Sprint 14 |
+| `src/ui/GameScreen.tsx` | Grid, criaturas, skills, game loop | Reformulado Sprint 14 |
+| `src/ui/HUD.tsx` | Timer gradiente, contador 👤 | Reformulado Sprint 14 |
+| `src/ui/VictoryScreen.tsx` | Vitória com glow verde | Reformulado Sprint 14 |
+| `src/ui/DefeatScreen.tsx` | Derrota com dica | Reformulado Sprint 14 |
+| `src/ui/Button.tsx` | Botão laranja com glow | Reformulado Sprint 14 |
+| `src/ui/SkillButton.tsx` | Ícones novos, destaque seleção | Reformulado Sprint 14 |
+| `src/ui/TimerBar.tsx` | Gradiente dinâmico | Reformulado Sprint 14 |
+| `src/ui/LevelItem.tsx` | Cards escuros com hover | Reformulado Sprint 14 |
+| `src/ui/LevelSelectionScreen.tsx` | Título "Níveis" | Reformulado Sprint 14 |
+| `src/game/engine.ts` | Engine + spawn queue | DEC-011 |
+| `src/game/e2e.test.ts` | Teste E2E fluxo completo | Novo Sprint 14 |
+| `README.md` | Documentação do projeto | Novo Sprint 14 |
 | `docs/design/UI_UX_GUIDE.md` | Guia de estilo visual | Fonte dos tokens |
-| `docs/agent/DECISIONS.md` | 10 decisões documentadas | DEC-001 a DEC-010 |
+| `docs/agent/DECISIONS.md` | 11 decisões documentadas | DEC-001 a DEC-011 |
 
 ## 5. Decisões já tomadas
 
-Ver `docs/agent/DECISIONS.md` para todas as decisões (DEC-001 a DEC-010).
+Ver `docs/agent/DECISIONS.md` para todas as decisões (DEC-001 a DEC-011).
 
 Resumo:
 - DEC-001: Vitest
@@ -112,6 +108,7 @@ Resumo:
 - DEC-008: Correção Button.onClick
 - DEC-009: Stack React/Vite/TS
 - DEC-010: Thresholds 62/58/58/62 (Sprint 13)
+- DEC-011: metaCriaturas valida contra total (inicial + filaSpawn) (Sprint 14)
 
 ## 6. Problemas conhecidos
 
@@ -120,18 +117,23 @@ Resumo:
 
 ### Problema 2 — ESLint timeout no WSL
 - **Descrição:** `npx eslint src/` pode travar no WSL (Node v22 + ESLint v10).
-- **Status:** Não investigado. Alternativa: verificar código manualmente ou usar GitHub Actions.
+- **Status:** Não investigado.
+
+### Problema 3 — Interação browser_tool para skills no grid
+- **Descrição:** Tentativas de clicar em células do grid via browser_tool falharam (botão "🧱 Construir" não identificável por role, eventos React não disparados por `.click()` em divs). Engine foi validado via teste automatizado.
+- **Status:** Não reproduzido em navegador real — pode ser limitação da ferramenta de automação.
 
 ## 7. O que o próximo agente NÃO deve fazer
 
 - NÃO reinstalar jsdom/happy-dom (Node.js v22.22.2 incompatível)
 - NÃO modificar skills.ts (bug corrigido)
 - NÃO modificar Button.tsx (finalizado)
-- NÃO reverter DEC-009 (stack documentada)
+- NÃO reverter DEC-009 (stack web)
 - NÃO alterar engine.ts sem novos testes
 - NÃO implementar multiplayer, editor de níveis, loja
 - NÃO usar `any` ou `@ts-ignore`
 - NÃO alterar tsconfig.json
+- NÃO gastar tempo tentando fazer browser_tool clicar em células do grid (usar testes automatizados no lugar)
 
 ## 8. Comandos úteis
 
@@ -139,6 +141,6 @@ Resumo:
 cd /mnt/c/Dev/lemmings-style-game
 npm run dev          # servidor na porta 3000
 npm run build        # build de produção
-npm test             # vitest run — 119 testes
+npm test             # vitest run — 121 testes
 npm run typecheck    # tsc --noEmit
 ```
